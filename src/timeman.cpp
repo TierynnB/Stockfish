@@ -28,6 +28,39 @@
 
 namespace Stockfish {
 
+int mtg_1  = 50;
+int mtg_2  = 50;
+int mtg_3  = 50;
+int mtg_4  = 50;
+int mtg_5  = 50;
+int mtg_6  = 50;
+int mtg_7  = 50;
+int mtg_8  = 50;
+int mtg_9  = 50;
+int mtg_10 = 50;
+int mtg_11 = 50;
+int mtg_12 = 50;
+int mtg_13 = 50;
+int mtg_14 = 50;
+int mtg_15 = 50;
+
+TUNE(SetRange(0, 100),
+     mtg_1,
+     mtg_2,
+     mtg_3,
+     mtg_4,
+     mtg_5,
+     mtg_6,
+     mtg_7,
+     mtg_8,
+     mtg_9,
+     mtg_10,
+     mtg_11,
+     mtg_12,
+     mtg_13,
+     mtg_14,
+     mtg_15);
+
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 TimePoint TimeManagement::elapsed(size_t nodes) const {
@@ -81,8 +114,74 @@ void TimeManagement::init(Search::LimitsType& limits,
         limits.npmsec = npmsec;
     }
 
+    // estimate moves left if movesToGo is default
+    int moveNumber           = (ply % 2 == 0) ? (ply / 2) : std::div(ply, 2).quot + 1;
+    int estimatedMoveHorizon = 50;
+
+    if (0 < moveNumber && moveNumber <= 10)
+    {
+        estimatedMoveHorizon = mtg_1;
+    }
+    else if (10 < moveNumber && moveNumber <= 20)
+    {
+        estimatedMoveHorizon = mtg_2;
+    }
+    else if (20 < moveNumber && moveNumber <= 30)
+    {
+        estimatedMoveHorizon = mtg_3;
+    }
+    else if (30 < moveNumber && moveNumber <= 40)
+    {
+        estimatedMoveHorizon = mtg_4;
+    }
+    else if (40 < moveNumber && moveNumber <= 50)
+    {
+        estimatedMoveHorizon = mtg_5;
+    }
+    else if (50 < moveNumber && moveNumber <= 60)
+    {
+        estimatedMoveHorizon = mtg_6;
+    }
+    else if (60 < moveNumber && moveNumber <= 70)
+    {
+        estimatedMoveHorizon = mtg_7;
+    }
+    else if (70 < moveNumber && moveNumber <= 80)
+    {
+        estimatedMoveHorizon = mtg_8;
+    }
+    else if (80 < moveNumber && moveNumber <= 90)
+    {
+        estimatedMoveHorizon = mtg_9;
+    }
+    else if (90 < moveNumber && moveNumber <= 100)
+    {
+        estimatedMoveHorizon = mtg_10;
+    }
+    else if (100 < moveNumber && moveNumber <= 110)
+    {
+        estimatedMoveHorizon = mtg_11;
+    }
+    else if (110 < moveNumber && moveNumber <= 120)
+    {
+        estimatedMoveHorizon = mtg_12;
+    }
+    else if (120 < moveNumber && moveNumber <= 130)
+    {
+        estimatedMoveHorizon = mtg_13;
+    }
+    else if (130 < moveNumber && moveNumber <= 140)
+    {
+        estimatedMoveHorizon = mtg_14;
+    }
+    else if (140 < moveNumber && moveNumber <= 150)
+    {
+        estimatedMoveHorizon = mtg_15;
+    }
+
+
     // Maximum move horizon of 50 moves
-    int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
+    int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : estimatedMoveHorizon;
 
     // if less than one second, gradually reduce mtg
     if (limits.time[us] < 1000 && (double(mtg) / limits.time[us] > 0.05))
