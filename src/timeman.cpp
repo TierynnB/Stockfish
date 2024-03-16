@@ -25,8 +25,12 @@
 
 #include "search.h"
 #include "ucioption.h"
+#include "position.h"
+#include "evaluate.h"
 
 namespace Stockfish {
+
+using Eval::evaluate;
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -47,10 +51,8 @@ void TimeManagement::advance_nodes_time(std::int64_t nodes) {
 // the bounds of time allowed for the current game ply. We currently support:
 //      1) x basetime (+ z increment)
 //      2) x moves in y seconds (+ z increment)
-void TimeManagement::init(Search::LimitsType& limits,
-                          Color               us,
-                          int                 ply,
-                          const OptionsMap&   options) {
+void TimeManagement::init(
+  Search::LimitsType& limits, Color us, int ply, const OptionsMap& options, const Position& pos) {
     // If we have no time, no need to initialize TM, except for the start time,
     // which is used by movetime.
     startTime = limits.startTime;
@@ -84,11 +86,20 @@ void TimeManagement::init(Search::LimitsType& limits,
     // Maximum move horizon of 50 moves
     int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
 
+    // if side is significantly ahead, game will likely not last much longer.
+    //?? maybe something along these lines, idk what kind of values simple_eval returns.
+    int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
+    if (currentSimpleEval > 2000)
+    {
+        mtg = 30;
+    }
+
     // if less than one second, gradually reduce mtg
     if (limits.time[us] < 1000 && (double(mtg) / limits.time[us] > 0.05))
     {
         mtg = limits.time[us] * 0.05;
     }
+
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)

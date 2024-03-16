@@ -24,6 +24,7 @@
 
 #include "misc.h"
 #include "types.h"
+#include "position.h"
 
 namespace Stockfish {
 
@@ -37,7 +38,11 @@ struct LimitsType;
 // the maximum available time, the game move number, and other parameters.
 class TimeManagement {
    public:
-    void init(Search::LimitsType& limits, Color us, int ply, const OptionsMap& options);
+    void init(Search::LimitsType& limits,
+              Color               us,
+              int                 ply,
+              const OptionsMap&   options,
+              const Position&     pos);
 
     TimePoint optimum() const;
     TimePoint maximum() const;
