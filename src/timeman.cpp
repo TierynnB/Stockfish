@@ -32,6 +32,12 @@ namespace Stockfish {
 
 using Eval::evaluate;
 
+int mtg_updated = 30;
+int evalLimit   = 1000;
+
+TUNE(SetRange(0, 5000), evalLimit);
+TUNE(SetRange(0, 50), mtg_updated);
+
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 TimePoint TimeManagement::elapsed(size_t nodes) const {
@@ -89,9 +95,9 @@ void TimeManagement::init(
     // if side is significantly ahead, game will likely not last much longer.
     //?? maybe something along these lines, idk what kind of values simple_eval returns.
     int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
-    if (currentSimpleEval > 2000)
+    if (currentSimpleEval > evalLimit)
     {
-        mtg = 30;
+        mtg = mtg_updated;
     }
 
     // if less than one second, gradually reduce mtg
