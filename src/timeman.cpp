@@ -89,9 +89,9 @@ void TimeManagement::init(
     // if side is significantly ahead, game will likely not last much longer.
     //?? maybe something along these lines, idk what kind of values simple_eval returns.
     int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
-    if (currentSimpleEval > 1000)
+    if (currentSimpleEval < -1000)
     {
-        mtg = 30;
+        mtg = 25;
     }
 
     // if less than one second, gradually reduce mtg
