@@ -86,14 +86,6 @@ void TimeManagement::init(
     // Maximum move horizon of 50 moves
     int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
 
-    // if side is significantly ahead, game will likely not last much longer.
-    //?? maybe something along these lines, idk what kind of values simple_eval returns.
-    int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
-    if (currentSimpleEval < -1000)
-    {
-        mtg = 25;
-    }
-
     // if less than one second, gradually reduce mtg
     if (limits.time[us] < 1000 && (double(mtg) / limits.time[us] > 0.05))
     {
@@ -110,6 +102,12 @@ void TimeManagement::init(
     // game time for the current move, so also cap to a percentage of available game time.
     if (limits.movestogo == 0)
     {
+        // if side is significantly ahead, game will likely not last much longer.
+        //?? maybe something along these lines, idk what kind of values simple_eval returns.
+        int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
+
+        double evalExtra = currentSimpleEval < 0 ? 1.1 : 1;
+
         // Use extra time with larger increments
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
 
@@ -120,7 +118,7 @@ void TimeManagement::init(
 
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
                             0.213 * limits.time[us] / double(timeLeft))
-                 * optExtra;
+                 * optExtra * evalExtra;
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
     }
 
