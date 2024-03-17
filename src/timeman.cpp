@@ -32,11 +32,9 @@ namespace Stockfish {
 
 using Eval::evaluate;
 
-int mtg_updated = 30;
-int evalLimit   = 1000;
+int eval_opt_extra = 1500;
 
-TUNE(SetRange(0, 5000), evalLimit);
-TUNE(SetRange(0, 50), mtg_updated);
+TUNE(SetRange(1000, 2000), eval_opt_extra);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -92,20 +90,11 @@ void TimeManagement::init(
     // Maximum move horizon of 50 moves
     int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
 
-    // if side is significantly ahead, game will likely not last much longer.
-    //?? maybe something along these lines, idk what kind of values simple_eval returns.
-    int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
-    if (currentSimpleEval > evalLimit)
-    {
-        mtg = mtg_updated;
-    }
-
     // if less than one second, gradually reduce mtg
     if (limits.time[us] < 1000 && (double(mtg) / limits.time[us] > 0.05))
     {
         mtg = limits.time[us] * 0.05;
     }
-
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)
@@ -116,6 +105,14 @@ void TimeManagement::init(
     // game time for the current move, so also cap to a percentage of available game time.
     if (limits.movestogo == 0)
     {
+
+
+        // if side is significantly ahead, game will likely not last much longer.
+        //?? maybe something along these lines, idk what kind of values simple_eval returns.
+        int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
+
+        double evalExtra = currentSimpleEval < 0 ? (eval_opt_extra / 1000) : 1;
+
         // Use extra time with larger increments
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
 
@@ -126,7 +123,7 @@ void TimeManagement::init(
 
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
                             0.213 * limits.time[us] / double(timeLeft))
-                 * optExtra;
+                 * optExtra * evalExtra;
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
     }
 
