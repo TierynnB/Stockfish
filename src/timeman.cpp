@@ -106,7 +106,10 @@ void TimeManagement::init(
         //?? maybe something along these lines, idk what kind of values simple_eval returns.
         int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
 
-        double evalExtra = (currentSimpleEval < -(2 * PawnValue) && limits.inc[us] > 500) ? 2 : 1;
+        double pawnDisadvantage = (limits.inc[us] > 500 && currentSimpleEval < 0)
+                                  ? abs(currentSimpleEval / PawnValue)
+                                  : 0.00;
+        double evalExtra        = pawnDisadvantage * 0.1 + 1;
 
         // Use extra time with larger increments
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
