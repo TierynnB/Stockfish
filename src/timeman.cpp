@@ -105,7 +105,9 @@ void TimeManagement::init(
         //increase optScale by 0.2 for each pawn behind the side is.
         int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
 
-        double pawnDisadvantage = currentSimpleEval < 0 ? abs(currentSimpleEval / PawnValue) : 0.00;
+        double pawnDisadvantage = (limits.inc[us] > 500 && currentSimpleEval < 0)
+                                  ? abs(currentSimpleEval / PawnValue)
+                                  : 0.00;
         double evalExtra        = pawnDisadvantage * 0.25 + 1;
 
         // Use extra time with larger increments
