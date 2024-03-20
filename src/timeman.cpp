@@ -102,14 +102,13 @@ void TimeManagement::init(
     // game time for the current move, so also cap to a percentage of available game time.
     if (limits.movestogo == 0)
     {
-        // if side is significantly ahead, game will likely not last much longer.
-        //?? maybe something along these lines, idk what kind of values simple_eval returns.
+        //increase optScale by 0.2 for each pawn behind the side is.
         int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
 
         double pawnDisadvantage = (limits.inc[us] > 500 && currentSimpleEval < 0)
                                   ? abs(currentSimpleEval / PawnValue)
                                   : 0.00;
-        double evalExtra        = pawnDisadvantage * 0.1 + 1;
+        double evalExtra        = pawnDisadvantage * 0.25 + 1;
 
         // Use extra time with larger increments
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
