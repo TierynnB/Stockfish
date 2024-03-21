@@ -28,6 +28,10 @@
 
 namespace Stockfish {
 
+int maxTimeTunePercent = 825;  // * 1000
+
+TUNE(SetRange(100, 1000), maxTimeTunePercent);
+
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 TimePoint TimeManagement::elapsed(size_t nodes) const {
@@ -111,6 +115,11 @@ void TimeManagement::init(Search::LimitsType& limits,
                             0.213 * limits.time[us] / double(timeLeft))
                  * optExtra;
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
+
+        // Limit the maximum possible time for this move
+        optimumTime = TimePoint(optScale * timeLeft);
+        maximumTime =
+          TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
     }
 
     // x moves in y seconds (+ z increment)
@@ -118,12 +127,15 @@ void TimeManagement::init(Search::LimitsType& limits,
     {
         optScale = std::min((0.88 + ply / 116.4) / mtg, 0.88 * limits.time[us] / double(timeLeft));
         maxScale = std::min(6.3, 1.5 + 0.11 * mtg);
+
+        // Limit the maximum possible time for this move
+        optimumTime = TimePoint(optScale * timeLeft);
+        maximumTime =
+          TimePoint(std::min((maxTimeTunePercent / 1000) * limits.time[us] - moveOverhead,
+                             maxScale * optimumTime))
+          - 10;
     }
 
-    // Limit the maximum possible time for this move
-    optimumTime = TimePoint(optScale * timeLeft);
-    maximumTime =
-      TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
