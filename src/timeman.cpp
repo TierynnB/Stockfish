@@ -107,9 +107,9 @@ void TimeManagement::init(
         int currentSimpleEval = Eval::simple_eval(pos, pos.side_to_move());
 
         double pawnDisadvantage = (limits.inc[us] > 500 && currentSimpleEval < 0)
-                                  ? abs(currentSimpleEval / PawnValue)
+                                  ? std::abs(currentSimpleEval / PawnValue)
                                   : 0.00;
-        double evalExtra        = pawnDisadvantage * 0.1 + 1;
+        double evalExtra        = pawnDisadvantage * 0.15;
 
         // Use extra time with larger increments
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
@@ -123,6 +123,14 @@ void TimeManagement::init(
                             0.213 * limits.time[us] / double(timeLeft))
                  * optExtra * evalExtra;
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
+
+        // Limit the maximum possible time for this move
+        //increase optimum time at disadvantage. do not increase maxtime.
+        optimumTime = TimePoint(optScale * timeLeft * evalExtra);
+
+        maximumTime = TimePoint(std::min(0.825 * limits.time[us] - moveOverhead,
+                                         maxScale * (optScale * timeLeft)))
+                    - 10;
     }
 
     // x moves in y seconds (+ z increment)
@@ -130,12 +138,13 @@ void TimeManagement::init(
     {
         optScale = std::min((0.88 + ply / 116.4) / mtg, 0.88 * limits.time[us] / double(timeLeft));
         maxScale = std::min(6.3, 1.5 + 0.11 * mtg);
+
+        // Limit the maximum possible time for this move
+        optimumTime = TimePoint(optScale * timeLeft);
+        maximumTime =
+          TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
     }
 
-    // Limit the maximum possible time for this move
-    optimumTime = TimePoint(optScale * timeLeft);
-    maximumTime =
-      TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
