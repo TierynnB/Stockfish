@@ -134,11 +134,9 @@ void TimeManagement::init(Search::LimitsType& limits,
                              maxScale * optimumTime))
           - 10;
     }
+
+    if (options["Ponder"])
+        optimumTime += optimumTime / 4;
 }
-
-
-if (options["Ponder"])
-    optimumTime += optimumTime / 4;
 }
-
 }  // namespace Stockfish
