@@ -109,7 +109,7 @@ void TimeManagement::init(
         double pawnDisadvantage = (limits.inc[us] > 500 && currentSimpleEval < 0)
                                   ? std::abs(currentSimpleEval / PawnValue)
                                   : 0.00;
-        double evalExtra        = pawnDisadvantage * 0.15;
+        double evalExtra        = pawnDisadvantage * 0.15 + 1;
 
         // Use extra time with larger increments
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
