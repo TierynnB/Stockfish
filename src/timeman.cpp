@@ -121,7 +121,7 @@ void TimeManagement::init(
 
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
                             0.213 * limits.time[us] / double(timeLeft))
-                 * optExtra * evalExtra;
+                 * optExtra;
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
 
         // Limit the maximum possible time for this move
