@@ -109,7 +109,7 @@ void TimeManagement::init(
         double pawnDisadvantage = (limits.inc[us] > 500 && currentSimpleEval < 0)
                                   ? std::abs(currentSimpleEval / PawnValue)
                                   : 0.00;
-        double evalExtra        = pawnDisadvantage * 0.15 + 1;
+        double evalExtra        = pawnDisadvantage * 0.25 + 1;
 
         // Use extra time with larger increments
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
@@ -121,16 +121,15 @@ void TimeManagement::init(
 
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
                             0.213 * limits.time[us] / double(timeLeft))
-                 * optExtra;
+                 * optExtra * evalExtra;
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
 
         // Limit the maximum possible time for this move
         //increase optimum time at disadvantage. do not increase maxtime.
-        optimumTime = TimePoint(optScale * timeLeft * evalExtra);
+        optimumTime = TimePoint(optScale * timeLeft);
 
-        maximumTime = TimePoint(std::min(0.825 * limits.time[us] - moveOverhead,
-                                         maxScale * (optScale * timeLeft)))
-                    - 10;
+        maximumTime =
+          TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
     }
 
     // x moves in y seconds (+ z increment)
