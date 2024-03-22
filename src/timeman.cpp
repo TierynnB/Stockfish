@@ -130,7 +130,7 @@ void TimeManagement::init(Search::LimitsType& limits,
         // Limit the maximum possible time for this move
         optimumTime = TimePoint(optScale * timeLeft);
         maximumTime =
-          TimePoint(std::min(double(max_Time_Tune / 1000) * limits.time[us] - moveOverhead,
+          TimePoint(std::min(double(max_Time_Tune / 1000.00) * limits.time[us] - moveOverhead,
                              maxScale * optimumTime))
           - 10;
     }
