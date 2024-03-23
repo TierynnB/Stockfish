@@ -440,7 +440,8 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
 
             double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
+              std::max(mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability,
+                       double(mainThread->tm.optimum()));
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -600,7 +601,7 @@ Value Search::Worker::search(
                           : Move::none();
     ttCapture = ttMove && pos.capture_stage(ttMove);
 
-    // At this point, if excluded, skip straight to step 6, static eval. However,
+    // At this point, if excluded, skip straight to step  6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
     if (!excludedMove)
         ss->ttPv = PvNode || (ss->ttHit && tte->is_pv());
