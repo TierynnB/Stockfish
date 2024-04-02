@@ -432,16 +432,17 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
+            double fallingEval = 0.1067
+                               + (223 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 97 * (mainThread->iterValue[iterIdx] - bestValue))
-                               / 10000.0;
+                                   / 10000.0;
             fallingEval = std::clamp(fallingEval, 0.580, 1.667);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
+            int    el                  = std::clamp((bestValue / 150 + 5), 0, 9);
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el];
@@ -1629,7 +1630,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1107 - delta * 725 / rootDelta) / 1024 + (!i && reductionScale > 956);
+    return (reductionScale - delta * 725 / rootDelta) / 1024 + (!i && reductionScale > 956)
+         + 1.081;  // 1107 / 1024 = 1.081
 }
 
 namespace {
@@ -1902,9 +1904,8 @@ std::string SearchManager::pv(const Search::Worker&     worker,
         if (ss.rdbuf()->in_avail())  // Not at first line
             ss << "\n";
 
-        ss << "info"
-           << " depth " << d << " seldepth " << rootMoves[i].selDepth << " multipv " << i + 1
-           << " score " << UCI::to_score(v, pos);
+        ss << "info" << " depth " << d << " seldepth " << rootMoves[i].selDepth << " multipv "
+           << i + 1 << " score " << UCI::to_score(v, pos);
 
         if (worker.options["UCI_ShowWDL"])
             ss << UCI::wdl(v, pos);
