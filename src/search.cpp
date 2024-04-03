@@ -238,12 +238,28 @@ void Search::Worker::iterative_deepening() {
     Stack  stack[MAX_PLY + 10] = {};
     Stack* ss                  = stack + 7;
 
-    for (int i = 7; i > 0; --i)
-    {
-        (ss - i)->continuationHistory =
-          &this->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
-        (ss - i)->staticEval = VALUE_NONE;
-    }
+    (ss - 7)->continuationHistory =
+      &this->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
+    (ss - 7)->staticEval = VALUE_NONE;
+
+    (ss - 6)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0];
+    (ss - 6)->staticEval          = VALUE_NONE;
+
+    (ss - 5)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0];
+    (ss - 5)->staticEval          = VALUE_NONE;
+
+    (ss - 4)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0];
+    (ss - 4)->staticEval          = VALUE_NONE;
+
+    (ss - 3)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0];
+    (ss - 3)->staticEval          = VALUE_NONE;
+
+    (ss - 2)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0];
+    (ss - 2)->staticEval          = VALUE_NONE;
+
+    (ss - 1)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0];
+    (ss - 1)->staticEval          = VALUE_NONE;
+
 
     for (int i = 0; i <= MAX_PLY + 2; ++i)
         (ss + i)->ply = i;
@@ -1902,9 +1918,8 @@ std::string SearchManager::pv(const Search::Worker&     worker,
         if (ss.rdbuf()->in_avail())  // Not at first line
             ss << "\n";
 
-        ss << "info"
-           << " depth " << d << " seldepth " << rootMoves[i].selDepth << " multipv " << i + 1
-           << " score " << UCI::to_score(v, pos);
+        ss << "info" << " depth " << d << " seldepth " << rootMoves[i].selDepth << " multipv "
+           << i + 1 << " score " << UCI::to_score(v, pos);
 
         if (worker.options["UCI_ShowWDL"])
             ss << UCI::wdl(v, pos);
