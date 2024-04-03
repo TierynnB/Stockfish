@@ -1095,19 +1095,32 @@ uint8_t* set_dtz_map(TBTable<DTZ>& e, uint8_t* data, File maxFile) {
             if (flags & TBFlag::Wide)
             {
                 data += uintptr_t(data) & 1;  // Word alignment, we may have a mixed table
-                for (int i = 0; i < 4; ++i)
-                {  // Sequence like 3,x,x,x,1,x,0,2,x,x
-                    e.get(0, f)->map_idx[i] = uint16_t((uint16_t*) data - (uint16_t*) e.map + 1);
-                    data += 2 * number<uint16_t, LittleEndian>(data) + 2;
-                }
+
+                e.get(0, f)->map_idx[0] = uint16_t((uint16_t*) data - (uint16_t*) e.map + 1);
+                data += 2 * number<uint16_t, LittleEndian>(data) + 2;
+
+                e.get(0, f)->map_idx[1] = uint16_t((uint16_t*) data - (uint16_t*) e.map + 1);
+                data += 2 * number<uint16_t, LittleEndian>(data) + 2;
+
+                e.get(0, f)->map_idx[2] = uint16_t((uint16_t*) data - (uint16_t*) e.map + 1);
+                data += 2 * number<uint16_t, LittleEndian>(data) + 2;
+
+                e.get(0, f)->map_idx[3] = uint16_t((uint16_t*) data - (uint16_t*) e.map + 1);
+                data += 2 * number<uint16_t, LittleEndian>(data) + 2;
             }
             else
             {
-                for (int i = 0; i < 4; ++i)
-                {
-                    e.get(0, f)->map_idx[i] = uint16_t(data - e.map + 1);
-                    data += *data + 1;
-                }
+                e.get(0, f)->map_idx[0] = uint16_t(data - e.map + 1);
+                data += *data + 1;
+
+                e.get(0, f)->map_idx[1] = uint16_t(data - e.map + 1);
+                data += *data + 1;
+
+                e.get(0, f)->map_idx[2] = uint16_t(data - e.map + 1);
+                data += *data + 1;
+
+                e.get(0, f)->map_idx[3] = uint16_t(data - e.map + 1);
+                data += *data + 1;
             }
         }
     }
