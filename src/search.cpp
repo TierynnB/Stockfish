@@ -1768,13 +1768,26 @@ void update_all_stats(const Position& pos,
 // by moves at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
-    for (int i : {1, 2, 3, 4, 6})
+    if (((ss - 1)->currentMove).is_ok())
+        (*(ss - 1)->continuationHistory)[pc][to] << bonus;
+
+    if (((ss - 2)->currentMove).is_ok())
+        (*(ss - 2)->continuationHistory)[pc][to] << bonus;
+
+    if (!ss->inCheck)
     {
         // Only update the first 2 continuation histories if we are in check
-        if (ss->inCheck && i > 2)
-            break;
-        if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << bonus / (1 + 3 * (i == 3));
+        if (((ss - 3)->currentMove).is_ok())
+            (*(ss - 3)->continuationHistory)[pc][to] << bonus / 4;
+
+        if (((ss - 4)->currentMove).is_ok())
+            (*(ss - 4)->continuationHistory)[pc][to] << bonus;
+
+        if (((ss - 5)->currentMove).is_ok())
+            (*(ss - 5)->continuationHistory)[pc][to] << bonus;
+
+        if (((ss - 6)->currentMove).is_ok())
+            (*(ss - 6)->continuationHistory)[pc][to] << bonus;
     }
 }
 
@@ -1902,9 +1915,8 @@ std::string SearchManager::pv(const Search::Worker&     worker,
         if (ss.rdbuf()->in_avail())  // Not at first line
             ss << "\n";
 
-        ss << "info"
-           << " depth " << d << " seldepth " << rootMoves[i].selDepth << " multipv " << i + 1
-           << " score " << UCI::to_score(v, pos);
+        ss << "info" << " depth " << d << " seldepth " << rootMoves[i].selDepth << " multipv "
+           << i + 1 << " score " << UCI::to_score(v, pos);
 
         if (worker.options["UCI_ShowWDL"])
             ss << UCI::wdl(v, pos);
