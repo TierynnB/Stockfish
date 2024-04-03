@@ -62,23 +62,19 @@ enum Stages {
 // Sort moves in descending order up to and including
 // a given limit. The order of moves smaller than the limit is left unspecified.
 void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
+
     for (ExtMove* p = begin + 1; p < end; ++p)
     {
         if (p->value >= limit)
         {
-            ExtMove  tmp = *p;
+            ExtMove  tmp = *p;  // Store the move temporarily
             ExtMove* q   = p;
-            while (q > begin && *(q - 1).value < tmp.value)
+            while (q > begin && *(q - 1) < tmp)
             {
-                *q = *(q - 1);
+                *q = *(q - 1);  // Shift larger moves to the right
                 --q;
             }
-            // Terminate the loop if q reaches the beginning
-            if (q == begin)
-            {
-                break;
-            }
-            *q = tmp;  // Insert at the correct position
+            *q = tmp;  // Insert the move in its correct position
         }
     }
 }
