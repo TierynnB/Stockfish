@@ -66,32 +66,15 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
     {
         if (p->value >= limit)
         {
-            ExtMove tmp = *p;
-            // Find the insertion position for p's value (excluding p)
-            ExtMove* sortedEnd = p - 1;
-            while (sortedEnd >= begin && *(sortedEnd) > tmp)
-            {
-                --sortedEnd;
-            }
-
-            // Handle potential boundary condition (avoid dereferencing past begin)
-            if (sortedEnd < begin)
-            {
-                sortedEnd =
-                  begin;  // Set sortedEnd to the beginning if no elements before p are greater
-            }
-
-            // Swap *p with the element before its insertion position
-            *p = *(sortedEnd + 1);
-
-            // Now, p's value is out of the way, proceed with insertion
-            ExtMove* q = p;
-            while (q > begin && *(q - 1) < tmp)
-            {
+            // Combine comparison and insertion into a single loop (potentially faster)
+            ExtMove  tmp = *p;
+            ExtMove* q   = p;
+            while (q > begin && *(q - 1).value < tmp.value)
+            {  // Use value directly for efficiency
                 *q = *(q - 1);
                 --q;
             }
-            *q = tmp;  // Insert tmp at its correct position
+            *q = tmp;  // Insert at the correct position
         }
     }
 }
