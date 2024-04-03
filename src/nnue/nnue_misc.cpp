@@ -110,17 +110,50 @@ std::string trace(Position& pos, const Eval::NNUE::Networks& networks) {
 
     char board[3 * 8 + 1][8 * 8 + 2];
     std::memset(board, ' ', sizeof(board));
-    for (int row = 0; row < 3 * 8 + 1; ++row)
-        board[row][8 * 8 + 1] = '\0';
+
+    board[0][8 * 8 + 1]  = '\0';
+    board[1][8 * 8 + 1]  = '\0';
+    board[2][8 * 8 + 1]  = '\0';
+    board[3][8 * 8 + 1]  = '\0';
+    board[4][8 * 8 + 1]  = '\0';
+    board[5][8 * 8 + 1]  = '\0';
+    board[6][8 * 8 + 1]  = '\0';
+    board[7][8 * 8 + 1]  = '\0';
+    board[8][8 * 8 + 1]  = '\0';
+    board[9][8 * 8 + 1]  = '\0';
+    board[10][8 * 8 + 1] = '\0';
+    board[11][8 * 8 + 1] = '\0';
+    board[12][8 * 8 + 1] = '\0';
+    board[13][8 * 8 + 1] = '\0';
+    board[14][8 * 8 + 1] = '\0';
+    board[15][8 * 8 + 1] = '\0';
+    board[16][8 * 8 + 1] = '\0';
+    board[17][8 * 8 + 1] = '\0';
+    board[18][8 * 8 + 1] = '\0';
+    board[19][8 * 8 + 1] = '\0';
+    board[20][8 * 8 + 1] = '\0';
+    board[21][8 * 8 + 1] = '\0';
+    board[22][8 * 8 + 1] = '\0';
+    board[23][8 * 8 + 1] = '\0';
+    board[24][8 * 8 + 1] = '\0';
 
     // A lambda to output one box of the board
     auto writeSquare = [&board, &pos](File file, Rank rank, Piece pc, Value value) {
         const int x = int(file) * 8;
         const int y = (7 - int(rank)) * 3;
-        for (int i = 1; i < 8; ++i)
-            board[y][x + i] = board[y + 3][x + i] = '-';
-        for (int i = 1; i < 3; ++i)
-            board[y + i][x] = board[y + i][x + 8] = '|';
+
+        board[y][x + 1] = board[y + 3][x + 1] = '-';
+        board[y][x + 2] = board[y + 3][x + 2] = '-';
+        board[y][x + 3] = board[y + 3][x + 3] = '-';
+        board[y][x + 4] = board[y + 3][x + 4] = '-';
+        board[y][x + 5] = board[y + 3][x + 5] = '-';
+        board[y][x + 6] = board[y + 3][x + 6] = '-';
+        board[y][x + 7] = board[y + 3][x + 7] = '-';
+
+        board[y + 1][x] = board[y + 1][x + 8] = '|';
+        board[y + 2][x] = board[y + 2][x + 8] = '|';
+
+
         board[y][x] = board[y][x + 8] = board[y + 3][x + 8] = board[y + 3][x] = '+';
         if (pc != NO_PIECE)
             board[y + 1][x + 4] = PieceToChar[pc];
@@ -163,8 +196,34 @@ std::string trace(Position& pos, const Eval::NNUE::Networks& networks) {
         }
 
     ss << " NNUE derived piece values:\n";
-    for (int row = 0; row < 3 * 8 + 1; ++row)
-        ss << board[row] << '\n';
+    // for (int row = 0; row < 3 * 8 + 1; ++row)
+    //     ss << board[row] << '\n';
+    ss << board[0] << '\n';
+    ss << board[1] << '\n';
+    ss << board[2] << '\n';
+    ss << board[3] << '\n';
+    ss << board[4] << '\n';
+    ss << board[5] << '\n';
+    ss << board[6] << '\n';
+    ss << board[7] << '\n';
+    ss << board[8] << '\n';
+    ss << board[9] << '\n';
+    ss << board[10] << '\n';
+    ss << board[11] << '\n';
+    ss << board[12] << '\n';
+    ss << board[13] << '\n';
+    ss << board[14] << '\n';
+    ss << board[15] << '\n';
+    ss << board[16] << '\n';
+    ss << board[17] << '\n';
+    ss << board[18] << '\n';
+    ss << board[19] << '\n';
+    ss << board[20] << '\n';
+    ss << board[21] << '\n';
+    ss << board[22] << '\n';
+    ss << board[23] << '\n';
+    ss << board[24] << '\n';
+
     ss << '\n';
 
     auto t = networks.big.trace_evaluate(pos);
@@ -181,14 +240,11 @@ std::string trace(Position& pos, const Eval::NNUE::Networks& networks) {
         ss << "|  " << bucket << "        ";
         ss << " |  ";
         format_cp_aligned_dot(t.psqt[bucket], ss, pos);
-        ss << "  "
-           << " |  ";
+        ss << "  " << " |  ";
         format_cp_aligned_dot(t.positional[bucket], ss, pos);
-        ss << "  "
-           << " |  ";
+        ss << "  " << " |  ";
         format_cp_aligned_dot(t.psqt[bucket] + t.positional[bucket], ss, pos);
-        ss << "  "
-           << " |";
+        ss << "  " << " |";
         if (bucket == t.correctBucket)
             ss << " <-- this bucket is used";
         ss << '\n';
