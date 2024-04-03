@@ -66,18 +66,18 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
     {
         if (p->value >= limit)
         {
-            ExtMove  tmp = *p;  // Store the move temporarily
-            ExtMove* q   = p;
-            while (q > begin && *(q - 1) < tmp)
+            ExtMove  tmp = *p;
+            ExtMove* q   = p - 1;  // Start comparison from the previous element
+            while (q >= begin && *(q) < tmp)
             {
-                *q = *(q - 1);  // Shift larger moves to the right
+                *(q + 1) = *q;  // Shift larger moves to the right
                 --q;
             }
-            *q = tmp;  // Insert the move in its correct position
+            *(q + 1) =
+              tmp;  // Insert the move in its correct position (one position ahead due to pre-decrement)
         }
     }
 }
-
 }  // namespace
 
 
