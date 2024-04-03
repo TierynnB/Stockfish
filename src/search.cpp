@@ -1768,16 +1768,6 @@ void update_all_stats(const Position& pos,
 // by moves at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
-    //skip 5
-    // for (int i : {1, 2, 3, 4, 6})
-    // {
-    //     // Only update the first 2 continuation histories if we are in check
-    //     if (ss->inCheck && i > 2)
-    //         break;
-    //     if (((ss - i)->currentMove).is_ok())
-    //         (*(ss - i)->continuationHistory)[pc][to] << bonus / (1 + 3 * (i == 3));
-    // }
-
     if (((ss - 1)->currentMove).is_ok())
         (*(ss - 1)->continuationHistory)[pc][to] << bonus;
 
@@ -1789,31 +1779,14 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
     // Only update the first 2 continuation histories if we are in check
     if (((ss - 3)->currentMove).is_ok())
-    {
         (*(ss - 3)->continuationHistory)[pc][to] << bonus / 4;
-    }
-    else
-    {
-        return;
-    }
 
     if (((ss - 4)->currentMove).is_ok())
-    {
         (*(ss - 4)->continuationHistory)[pc][to] << bonus;
-    }
-    else
-    {
-        return;
-    }
+
 
     if (((ss - 6)->currentMove).is_ok())
-    {
         (*(ss - 6)->continuationHistory)[pc][to] << bonus;
-    }
-    else
-    {
-        return;
-    }
 }
 
 
