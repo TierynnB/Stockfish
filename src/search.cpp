@@ -57,7 +57,7 @@ int cont_2 = 100;
 int cont_3 = 400;
 int cont_4 = 100;
 int cont_6 = 100;
-TUNE(SetRange(0, 1000), cont_1, cont_2, cont_3, cont_4, cont_6);
+TUNE(SetRange(1, 1000), cont_1, cont_2, cont_3, cont_4, cont_6);
 namespace {
 
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
