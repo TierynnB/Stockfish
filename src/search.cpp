@@ -1769,10 +1769,11 @@ void update_all_stats(const Position& pos,
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
     if (((ss - 1)->currentMove).is_ok())
-        (*(ss - 1)->continuationHistory)[pc][to] << bonus;
+        (*(ss - 1)->continuationHistory)[pc][to] << (bonus * 0.79);
 
     if (((ss - 2)->currentMove).is_ok())
-        (*(ss - 2)->continuationHistory)[pc][to] << bonus;
+        (*(ss - 2)->continuationHistory)[pc][to] << (bonus * 0.77);
+    ;
 
     if (ss->inCheck)
         return;
@@ -1784,7 +1785,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     // if -4th move is not ok, dont bother with the -6th
     if (((ss - 4)->currentMove).is_ok())
     {
-        (*(ss - 4)->continuationHistory)[pc][to] << bonus;
+        (*(ss - 4)->continuationHistory)[pc][to] << (bonus * .94);
     }
     else
     {
