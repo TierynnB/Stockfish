@@ -57,7 +57,7 @@ int cont_2 = 100;
 int cont_3 = 400;
 int cont_4 = 100;
 int cont_6 = 100;
-TUNE(SetRange(1, 1000), cont_1, cont_2, cont_3, cont_4, cont_6);
+TUNE(SetRange(1, 200), cont_1, cont_2, cont_3, cont_4, cont_6);
 namespace {
 
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
@@ -1776,24 +1776,24 @@ void update_all_stats(const Position& pos,
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
     if (((ss - 1)->currentMove).is_ok())
-        (*(ss - 1)->continuationHistory)[pc][to] << bonus / (cont_1 / 100);
+        (*(ss - 1)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
 
     if (((ss - 2)->currentMove).is_ok())
-        (*(ss - 2)->continuationHistory)[pc][to] << bonus / (cont_2 / 100);
+        (*(ss - 2)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
 
     if (ss->inCheck)
         return;
 
     // Only update the first 2 continuation histories if we are in check
     if (((ss - 3)->currentMove).is_ok())
-        (*(ss - 3)->continuationHistory)[pc][to] << bonus / (cont_3 / 100);
+        (*(ss - 3)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
 
     if (((ss - 4)->currentMove).is_ok())
-        (*(ss - 4)->continuationHistory)[pc][to] << bonus / (cont_4 / 100);
+        (*(ss - 4)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
 
 
     if (((ss - 6)->currentMove).is_ok())
-        (*(ss - 6)->continuationHistory)[pc][to] << bonus / (cont_6 / 100);
+        (*(ss - 6)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
 }
 
 
