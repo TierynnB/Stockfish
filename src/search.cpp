@@ -54,7 +54,7 @@ using namespace Search;
 
 int cont_1 = 100;
 int cont_2 = 100;
-int cont_3 = 400;
+int cont_3 = 25;
 int cont_4 = 100;
 int cont_6 = 100;
 TUNE(SetRange(1, 200), cont_1, cont_2, cont_3, cont_4, cont_6);
@@ -1779,21 +1779,21 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
         (*(ss - 1)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
 
     if (((ss - 2)->currentMove).is_ok())
-        (*(ss - 2)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
+        (*(ss - 2)->continuationHistory)[pc][to] << bonus * 100 / cont_2;
 
     if (ss->inCheck)
         return;
 
     // Only update the first 2 continuation histories if we are in check
     if (((ss - 3)->currentMove).is_ok())
-        (*(ss - 3)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
+        (*(ss - 3)->continuationHistory)[pc][to] << bonus * 100 / cont_3;
 
     if (((ss - 4)->currentMove).is_ok())
-        (*(ss - 4)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
+        (*(ss - 4)->continuationHistory)[pc][to] << bonus * 100 / cont_4;
 
 
     if (((ss - 6)->currentMove).is_ok())
-        (*(ss - 6)->continuationHistory)[pc][to] << bonus * 100 / cont_1;
+        (*(ss - 6)->continuationHistory)[pc][to] << bonus * 100 / cont_6;
 }
 
 
