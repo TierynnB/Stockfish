@@ -59,28 +59,28 @@ static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
 
     if (noTtCutNode && improving && oppWorsening)
-        return 74 * d - 94.38;
+        return 74 * d - 146;
 
     if (!noTtCutNode && improving && oppWorsening)
-        return 118 * d - 150.5;
+        return 118 * d - 233;
 
     if (!noTtCutNode && !improving && oppWorsening)
-        return 118 * d + 35.72;
+        return 118 * d - 36;
 
     if (!noTtCutNode && !improving && !oppWorsening)
         return 118 * d;
 
     if (noTtCutNode && !improving && oppWorsening)
-        return 74 * d + 22.4;
+        return 74 * d - 22;
 
     if (noTtCutNode && !improving && !oppWorsening)
         return 74 * d;
 
     if (!noTtCutNode && improving && !oppWorsening)
-        return 118 * d - 191.75;
+        return 118 * d - 192;
 
     if (noTtCutNode && improving && !oppWorsening)
-        return 74 * d - 120.25;
+        return 74 * d - 120;
 
     return 118 * d;
 }
