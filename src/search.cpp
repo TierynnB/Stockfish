@@ -58,7 +58,7 @@ struct FutilityMarginFactor {
     int futilityMultiplier;
     int deduction;
 };
-FutilityMarginFactor lookupTable[8] = {
+static constexpr FutilityMarginFactor lookupTable[8] = {
   {118, 0},    // 000: false, false, false
   {118, -36},  // 001: false, false, true
   {74, -192},  // 010: false, true, false
