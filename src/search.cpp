@@ -59,41 +59,30 @@ static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
 
     if (noTtCutNode && improving && oppWorsening)
-    {
         return 74 * d - 94.38;
-    }
-    else if (!noTtCutNode && improving && oppWorsening)
-    {
+
+    if (!noTtCutNode && improving && oppWorsening)
         return 118 * d - 150.5;
-    }
-    else if (!noTtCutNode && !improving && oppWorsening)
-    {
+
+    if (!noTtCutNode && !improving && oppWorsening)
         return 118 * d + 35.72;
-    }
-    else if (!noTtCutNode && !improving && !oppWorsening)
-    {
+
+    if (!noTtCutNode && !improving && !oppWorsening)
         return 118 * d;
-    }
-    else if (noTtCutNode && !improving && oppWorsening)
-    {
+
+    if (noTtCutNode && !improving && oppWorsening)
         return 74 * d + 22.4;
-    }
-    else if (noTtCutNode && !improving && !oppWorsening)
-    {
+
+    if (noTtCutNode && !improving && !oppWorsening)
         return 74 * d;
-    }
-    else if (!noTtCutNode && improving && !oppWorsening)
-    {
+
+    if (!noTtCutNode && improving && !oppWorsening)
         return 118 * d - 191.75;
-    }
-    else if (noTtCutNode && improving && !oppWorsening)
-    {
+
+    if (noTtCutNode && improving && !oppWorsening)
         return 74 * d - 120.25;
-    }
-    else
-    {
-        return 74 * d;
-    }
+
+    return 118 * d;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
