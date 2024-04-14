@@ -57,11 +57,19 @@ static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 118 - 44 * noTtCutNode;
-    Value improvingDeduction = 52 * improving * futilityMult / 32;
-    Value worseningDeduction = (310 + 48 * improving) * oppWorsening * futilityMult / 1024;
+    const Value futilityMultiplier = 118 - 44 * noTtCutNode;
+    const Value improvingFactor    = improving ? 53 : 0;
+    const Value worseningFactor    = oppWorsening ? (309 + 47 * improving) : 0;
 
-    return futilityMult * d - improvingDeduction - worseningDeduction;
+    // Precompute division factors
+    const Value divFactor32   = futilityMultiplier / 32;
+    const Value divFactor1024 = futilityMultiplier / 1024;
+
+    // Calculate deductions
+    const Value improvingDeduction = improvingFactor * divFactor32;
+    const Value worseningDeduction = worseningFactor * divFactor1024;
+
+    return futilityMultiplier * d - improvingDeduction - worseningDeduction;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
