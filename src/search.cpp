@@ -54,14 +54,25 @@ namespace {
 
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};
-
+struct FutilityMarginFactor {
+    int futilityMultiplier;
+    int deduction;
+};
+FutilityMarginFactor lookupTable[8] = {
+  {118, 0},    // 000: false, false, false
+  {118, -36},  // 001: false, false, true
+  {74, -192},  // 010: false, true, false
+  {74, -233},  // 011: false, true, true
+  {118, 0},    // 100: true, false, false
+  {118, -22},  // 101: true, false, true
+  {74, -120},  // 110: true, true, false
+  {74, -146}   // 111: true, true, true
+};
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 118 - 44 * noTtCutNode;
-    Value improvingDeduction = 52 * improving * futilityMult / 32;
-    Value worseningDeduction = (310 + 48 * improving) * oppWorsening * futilityMult / 1024;
-
-    return futilityMult * d - improvingDeduction - worseningDeduction;
+    FutilityMarginFactor futilityFactor =
+      lookupTable[(noTtCutNode * 4 + improving * 2 + oppWorsening * 1)];
+    return futilityFactor.futilityMultiplier * d - futilityFactor.deduction;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
