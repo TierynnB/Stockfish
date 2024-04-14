@@ -55,18 +55,18 @@ namespace {
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};
 struct FutilityMarginFactor {
-    int futilityMultiplier;
-    int deduction;
+    int    futilityMultiplier;
+    double deduction;
 };
 static constexpr FutilityMarginFactor lookupTable[8] = {
-  {118, 0},    // 000: false, false, false
-  {118, -36},  // 001: false, false, true
-  {74, -192},  // 010: false, true, false
-  {74, -233},  // 011: false, true, true
-  {118, 0},    // 100: true, false, false
-  {118, -22},  // 101: true, false, true
-  {74, -120},  // 110: true, true, false
-  {74, -146}   // 111: true, true, true
+  {118, 0},        // 000: false, false, false
+  {118, -35.723},  // 001: false, false, true
+  {74, -191.750},  // 010: false, true, false
+  {74, -233.004},  // 011: false, true, true
+  {118, 0},        // 100: true, false, false
+  {118, -22.402},  // 101: true, false, true
+  {74, -120.250},  // 110: true, true, false
+  {74, -146.121}   // 111: true, true, true
 };
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
