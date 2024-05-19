@@ -95,6 +95,10 @@ void TimeManagement::init(
     {
         mtg = scaledTime * 0.05;
     }
+    else
+    {  // reduce mtg when t
+        mtg = (1 - (scaledInc / (2 * scaledTime))) * mtg;
+    }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)
