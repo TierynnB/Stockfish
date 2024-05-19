@@ -97,7 +97,7 @@ void TimeManagement::init(
     }
     else
     {  // reduce mtg when t
-        mtg = (1 - (scaledInc / (2 * scaledTime))) * mtg;
+        mtg = (1 - 2 * scaledInc / scaledTime) * mtg;
     }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
