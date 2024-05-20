@@ -28,6 +28,16 @@
 
 namespace Stockfish {
 
+int tune_1 = 100;  // 1 * 100
+int tune_2 = 500;
+int tune_3 = 100;
+int tune_4 = 100;
+int tune_5 = 50;
+int tune_6 = 100;
+int tune_7 = 100;
+
+TUNE(SetRange(1, 1000), tune_2, tune_3, tune_4, tune_5, tune_6, tune_7);
+
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 
@@ -90,6 +100,7 @@ void TimeManagement::init(
     // Maximum move horizon of 50 moves
     int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
 
+
     // If less than one second, gradually reduce mtg
     if (scaledTime < 1000 && double(mtg) / scaledTime > 0.05)
     {
@@ -97,8 +108,13 @@ void TimeManagement::init(
     }
     else
     {  // reduce mtg when t
-        mtg = (1 - (5 / (1 + exp(-1 * (scaledInc / scaledTime - 0.5)))) * (scaledInc / scaledTime))
-            * mtg;
+        mtg = ((tune_1 / 100)
+               - ((tune_2 / 100)
+                  / (((tune_3 / 100)
+                      + exp(-(tune_4 / 100) * (scaledInc / scaledTime - (tune_5 / 100)))
+                          * (tune_7 / 100))))
+                   * (scaledInc / scaledTime))
+            * (tune_6 / 100) * mtg;
     }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
