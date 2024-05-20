@@ -91,13 +91,14 @@ void TimeManagement::init(
     int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
 
     // If less than one second, gradually reduce mtg
-    if (scaledTime < 1000 && double(mtg) / scaledInc > 0.05)
+    if (scaledTime < 1000 && double(mtg) / scaledTime > 0.05)
     {
         mtg = scaledTime * 0.05;
     }
     else
     {  // reduce mtg when t
-        mtg = (1 - 2 * scaledInc / scaledTime) * mtg;
+        mtg = (1 - (5 / (1 + exp(-1 * (scaledInc / scaledTime - 0.5)))) * (scaledInc / scaledTime))
+            * mtg;
     }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
