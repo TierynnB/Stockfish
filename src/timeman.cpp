@@ -28,16 +28,6 @@
 
 namespace Stockfish {
 
-int tune_1 = 100;  // 1 * 100
-int tune_2 = 500;
-int tune_3 = 100;
-int tune_4 = 100;
-int tune_5 = 50;
-int tune_6 = 100;
-int tune_7 = 100;
-
-TUNE(SetRange(1, 1000), tune_2, tune_3, tune_4, tune_5, tune_6, tune_7);
-
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 
@@ -108,13 +98,10 @@ void TimeManagement::init(
     }
     else
     {  // reduce mtg when t
-        mtg = ((tune_1 / 100)
-               - ((tune_2 / 100)
-                  / (((tune_3 / 100)
-                      + exp(-(tune_4 / 100) * (scaledInc / scaledTime - (tune_5 / 100)))
-                          * (tune_7 / 100))))
+        mtg = (1
+               - (4.93 / ((1.8728 + exp(-0.7597 * (scaledInc / scaledTime - 0.6608)) * 2.151)))
                    * (scaledInc / scaledTime))
-            * (tune_6 / 100) * mtg;
+            * 1.4985 * mtg;
     }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
