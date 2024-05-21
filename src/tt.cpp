@@ -41,7 +41,7 @@ void TTEntry::save(
         move16 = m;
 
     // Overwrite less valuable entries (cheapest checks first)
-    if (b == BOUND_EXACT || key16Bool || d_offset + 2 * pv > depth8 - 4
+    if (key16Bool || b == BOUND_EXACT || d_offset + 2 * pv > depth8 - 4
         || relative_age(generation8))
     {
         assert(d > DEPTH_OFFSET);
