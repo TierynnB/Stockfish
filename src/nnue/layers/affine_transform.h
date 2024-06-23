@@ -157,8 +157,7 @@ class AffineTransform {
     }
 
     static constexpr IndexType get_weight_index_scrambled(IndexType i) {
-        return (i / 4) % (PaddedInputDimensions / 4) * OutputDimensions * 4
-             + i / PaddedInputDimensions * 4 + i % 4;
+        return i % (PaddedInputDimensions * 4) + i / PaddedInputDimensions * OutputDimensions;
     }
 
     static constexpr IndexType get_weight_index(IndexType i) {
