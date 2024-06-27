@@ -46,11 +46,11 @@ int Eval::simple_eval(const Position& pos, Color c) {
 }
 
 bool Eval::use_smallnet(const Position& pos) {
-    srand(time(NULL));
+
     int simpleEval = simple_eval(pos, pos.side_to_move());
     int random_number;
     if (abs(simpleEval) > 962)
-        random_number = rand() % 4 == 0 ? 50 : 0;
+        random_number = simpleEval % 4 == 0 ? 50 : 0;
     return std::abs(simpleEval) > 962 + random_number;
 }
 
@@ -71,17 +71,17 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     Value nnue           = (125 * psqt + 131 * positional) / 128;
     int   nnueComplexity = std::abs(psqt - positional);
-    // dbg_hit_on(true, 1);
+    dbg_hit_on(true, 1);
 
-    // dbg_hit_on(smallNet, 2);
-    // dbg_hit_on((smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227)), 3);
-    // if (smallNet)
-    //     dbg_hit_on((smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227)), 4);
+    dbg_hit_on(smallNet, 2);
+    dbg_hit_on((smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227)), 3);
+    if (smallNet)
+        dbg_hit_on((smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227)), 4);
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227))
     {
-        // dbg_mean_of(std::abs(simpleEval), 5);
-        // dbg_stdev_of(std::abs(simpleEval), 6);
+        dbg_mean_of(std::abs(simpleEval), 5);
+        dbg_stdev_of(std::abs(simpleEval), 6);
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
         nnueComplexity             = std::abs(psqt - positional);
