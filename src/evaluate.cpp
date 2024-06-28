@@ -45,13 +45,11 @@ int Eval::simple_eval(const Position& pos, Color c) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
-bool Eval::use_smallnet(const Position& pos) {
+bool Eval::use_smallnet(const Position& pos, int optimism) {
 
     int simpleEval = simple_eval(pos, pos.side_to_move());
-    int random_number;
-    if (abs(simpleEval) > 962)
-        random_number = simpleEval % 4 == 0 ? 50 : 0;
-    return std::abs(simpleEval) > 962 + random_number;
+    // if optimism is less than -119, make it harder to use smallNet.
+    return std::abs(simpleEval) > 962 + 50 * (optimism < -119);
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
@@ -63,7 +61,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     assert(!pos.checkers());
 
     int  simpleEval = simple_eval(pos, pos.side_to_move());
-    bool smallNet   = use_smallnet(pos);
+    bool smallNet   = use_smallnet(pos, optimism);
     int  v;
 
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
@@ -71,12 +69,51 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
+
+    // dbg_mean_of(pos.can_castle(ANY_CASTLING), 1);
+    // dbg_mean_of(pos.castling_impeded(ANY_CASTLING), 2);
+    // dbg_mean_of(pos.game_ply(), 3);
+    // dbg_mean_of(pos.has_repeated(), 4);
+    // dbg_mean_of(pos.rule50_count(), 5);
+    // dbg_mean_of(optimism, 18);
+    // if (smallNet)
+    // {
+    //     dbg_mean_of(pos.can_castle(ANY_CASTLING), 6);
+    //     dbg_mean_of(pos.game_ply(), 8);
+    //     dbg_mean_of(pos.has_repeated(), 9);
+    //     dbg_mean_of(pos.rule50_count(), 10);
+    //     dbg_hit_on((pos.side_to_move() == WHITE), 11);
+    //     dbg_mean_of(optimism, 19);
+    // }
+
+
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227))
     {
+        dbg_mean_of(pos.can_castle(ANY_CASTLING), 1);
+
+        dbg_mean_of(pos.has_repeated(), 3);
+        dbg_mean_of(pos.rule50_count(), 5);
+        dbg_hit_on((pos.side_to_move() == WHITE), 7);
+        dbg_mean_of(optimism, 9);
+        dbg_stdev_of(optimism, 11);
+
+        dbg_hit_on(optimism < -119, 13);
+        dbg_hit_on(optimism >= -119, 15);
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
         smallNet                   = false;
+    }
+    else if (smallNet)
+    {
+        dbg_mean_of(pos.can_castle(ANY_CASTLING), 2);
+        dbg_mean_of(pos.has_repeated(), 4);
+        dbg_mean_of(pos.rule50_count(), 6);
+        dbg_hit_on((pos.side_to_move() == WHITE), 8);
+        dbg_mean_of(optimism, 10);
+        dbg_stdev_of(optimism, 12);
+        dbg_hit_on(optimism < -119, 14);
+        dbg_hit_on(optimism >= -119, 16);
     }
 
     // Blend optimism and eval with nnue complexity
