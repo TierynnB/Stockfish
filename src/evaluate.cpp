@@ -46,7 +46,7 @@ int a6 = 962;
 TUNE(SetRange(-200, 0), a1);
 TUNE(SetRange(0, 200), a2);
 TUNE(SetRange(0, 300), a3);
-TUNE(SetRange(0, 200), a4);
+TUNE(SetRange(-100, 50), a4);
 TUNE(SetRange(-100, 100), a5);
 TUNE(SetRange(500, 1500), a6);
 // Returns a static, purely materialistic evaluation of the position from
