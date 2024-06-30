@@ -36,7 +36,19 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int a1 = -119;
+int a2 = 50;
+int a3 = 110;
+int a4 = -20;
+int a5 = 0;
+int a6 = 962;
 
+TUNE(SetRange(-200, 0), a1);
+TUNE(SetRange(0, 200), a2);
+TUNE(SetRange(0, 300), a3);
+TUNE(SetRange(0, 200), a4);
+TUNE(SetRange(-100, 100), a5);
+TUNE(SetRange(500, 1500), a6);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -50,9 +62,12 @@ bool Eval::use_smallnet(const Position& pos, int optimism) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
 
     // make it harder or easier to use smallnet based on optimism.
-    int addToThreshold = optimism < -119 ? 50 : optimism > 110 ? -20 : 0;
+    // int addToThreshold = optimism < -119 ? 50 : optimism > 110 ? -20 : 0;
 
-    return std::abs(simpleEval) > 962 + addToThreshold;
+    int addToThreshold = optimism < a1 ? a2 : optimism > a3 ? a4 : a5;
+
+    // return std::abs(simpleEval) > 962 + addToThreshold;
+    return std::abs(simpleEval) > a6 + addToThreshold;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
