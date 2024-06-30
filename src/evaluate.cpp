@@ -51,8 +51,7 @@ bool Eval::use_smallnet(const Position& pos, int optimism) {
 
     // make it harder or easier to use smallnet based on optimism.
     int addToThreshold = optimism < -119 ? 50 : optimism > 110 ? -20 : 0;
-    //
-    addToThreshold += pos.rule50_count() > 13 ? 100 : 0;
+
     return std::abs(simpleEval) > 962 + addToThreshold;
 }
 
