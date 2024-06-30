@@ -50,7 +50,7 @@ bool Eval::use_smallnet(const Position& pos, int optimism) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
 
     // make it harder or easier to use smallnet based on optimism.
-    int addToThreshold = optimism < -119 ? 50 : optimism > 110 ? -20 : 0;
+    int addToThreshold = optimism < -120 ? 46 : optimism > 110 ? -21 : -9;
 
     return std::abs(simpleEval) > 962 + addToThreshold;
 }
