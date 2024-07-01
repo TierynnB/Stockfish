@@ -49,10 +49,8 @@ bool Eval::use_smallnet(const Position& pos, int optimism) {
 
     int simpleEval = simple_eval(pos, pos.side_to_move());
 
-    // make it harder or easier to use smallnet based on optimism.
-    int addToThreshold = optimism < -120 ? 46 : optimism > 110 ? -21 : -9;
 
-    return std::abs(simpleEval) > 962 + addToThreshold;
+    return std::abs(simpleEval) > 962 || optimism < -115;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
