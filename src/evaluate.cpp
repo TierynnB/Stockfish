@@ -48,15 +48,14 @@ int Eval::simple_eval(const Position& pos, Color c) {
 bool Eval::use_smallnet(const Position& pos, int optimism) {
 
     int    simpleEval = simple_eval(pos, pos.side_to_move());
-    double exponent   = 0.0004359030 * optimism
-                    + -0.0007079639 * simpleEval
-                    // + -0.00001748763 * pos.rule50_count()
-                    // + 0.00000889172 * (pos.side_to_move() == WHITE)
-                    // + 0.00064710458 * (PawnValue * pos.count<PAWN>(pos.side_to_move()))
-                    // + -0.00071619737 * pos.non_pawn_material(pos.side_to_move())
-                    // + 0.00167274548 * (PawnValue * pos.count<PAWN>(~pos.side_to_move()))
-                    // + -0.00016592796 * pos.non_pawn_material(~pos.side_to_move())
-                    + 4.44327897 * (std::abs(simpleEval) > 962) + -3.63641208;
+    double exponent   = -0.000179689 * optimism + -0.000642920 * simpleEval
+                    + -0.555425479 * pos.rule50_count()
+                    + 0.297360508 * (pos.side_to_move() == WHITE)
+                    + 0.000145950 * (PawnValue * pos.count<PAWN>(pos.side_to_move()))
+                    + -0.000276034 * pos.non_pawn_material(pos.side_to_move())
+                    + 0.001399556 * (PawnValue * pos.count<PAWN>(~pos.side_to_move()))
+                    + -0.000886719 * pos.non_pawn_material(~pos.side_to_move())
+                    + 9.907214610 * (std::abs(simpleEval) > 962) + 0.84396154;
 
     double logOutcome = 1 / (1 + std::exp(-exponent));
     return logOutcome > 0.5;
