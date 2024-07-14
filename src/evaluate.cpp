@@ -47,10 +47,19 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos, int optimism) {
 
-    int simpleEval = simple_eval(pos, pos.side_to_move());
+    int    simpleEval = simple_eval(pos, pos.side_to_move());
+    double exponent   = -0.0023314271 * optimism + -0.0005629908 * simpleEval
+                    + -0.0149868711 * pos.rule50_count()
+                    + 0.8417615460 * (pos.side_to_move() == WHITE)
+                    + 0.6177776940 * pos.can_castle(ANY_CASTLING) + 0.0353273193 * pos.game_ply()
+                    + 0.0006173119 * (PawnValue * pos.count<PAWN>(pos.side_to_move()))
+                    + -0.0006163393 * pos.non_pawn_material(pos.side_to_move())
+                    + 0.0003697126 * (PawnValue * pos.count<PAWN>(~pos.side_to_move()))
+                    + 0.0001942508 * pos.non_pawn_material(~pos.side_to_move())
+                    + 4.0232500200 * (std::abs(simpleEval) > 962) + 0.2837056;
 
-
-    return std::abs(simpleEval) > 962 || optimism < -115;
+    double logOutcome = 1 / (1 + std::exp(-exponent));
+    return logOutcome > 0.5;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
