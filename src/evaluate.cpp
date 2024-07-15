@@ -71,9 +71,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     assert(!pos.checkers());
 
-    int  simpleEval      = simple_eval(pos, pos.side_to_move());
-    bool smallNet        = use_smallnet(pos, optimism);
-    bool initialSmallNet = smallNet;
+    int  simpleEval = simple_eval(pos, pos.side_to_move());
+    bool smallNet   = use_smallnet(pos, optimism);
     int  v;
 
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
