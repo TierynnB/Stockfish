@@ -48,9 +48,16 @@ int Eval::simple_eval(const Position& pos, Color c) {
 bool Eval::use_smallnet(const Position& pos, int optimism) {
 
     int    simpleEval = simple_eval(pos, pos.side_to_move());
-    double exponent = -1.12562471 * pos.rule50_count() + 0.05234522 * (pos.side_to_move() == WHITE)
+    double exponent   = 0.001312779 * optimism + 0.000045002 * simpleEval
+                    + 0.083530749 * pos.rule50_count() +
 
-                    + 10.50250039 * (std::abs(simpleEval) > 962) + -5.61141065;
+                      0.287239936 * (pos.side_to_move() == WHITE)
+                    + -1.256165930 * pos.can_castle(ANY_CASTLING) + 0.012749364 * pos.game_ply()
+                    + -0.000305996 * (PawnValue * (pos.count<PAWN>(pos.side_to_move())))
+                    + 0.000294014 *
+
+                        +10.50250039 * (std::abs(simpleEval) > 962)
+                    + -5.61141065;
 
     double logOutcome = 1 / (1 + std::exp(-exponent));
     return logOutcome > 0.5;
