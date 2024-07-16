@@ -46,8 +46,19 @@ int Eval::simple_eval(const Position& pos, Color c) {
 }
 
 bool Eval::use_smallnet(const Position& pos) {
-    int simpleEval = simple_eval(pos, pos.side_to_move());
-    return std::abs(simpleEval) > 962;
+    int    simpleEval = simple_eval(pos, pos.side_to_move());
+    double exponent   = -0.43866379100 * pos.rule50_count()
+                    + 0.08989050310 * (pos.side_to_move() == WHITE)
+                    + 0.00251764659 * pos.can_castle(ANY_CASTLING)
+                    + 0.00053120409 * (PawnValue * (pos.count<PAWN>(pos.side_to_move())))
+                    + 0.00007887118 * pos.non_pawn_material(pos.side_to_move())
+                    + 0.00089004422 * (PawnValue * pos.count<PAWN>(~pos.side_to_move()))
+                    + -0.00039819061 * pos.non_pawn_material(~pos.side_to_move())
+                    + 1.59538216000 * (std::abs(simpleEval) > 962) + 0.15953822;
+
+    double logOutcome = 1 / (1 + std::exp(-exponent));
+
+    return (std::abs(simpleEval) > 962) && logOutcome > .1;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
