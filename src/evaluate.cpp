@@ -69,23 +69,22 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     Value nnue           = (125 * psqt + 131 * positional) / 128;
     int   nnueComplexity = std::abs(psqt - positional);
-
-    double exponent = 0.00175632 * simpleEval + -0.00012620 * optimism + -0.00887995 * nnue
-                    + -0.00008015 * nnueComplexity + -3.05690271 * (simpleEval > 0)
-                    + 5.68388592 * (nnue > 0) + 17.78295470 * (nnue * simpleEval > 0)
-                    + (std::abs(nnue) < 227) * -6.21294532 + 3.89766855 * std::abs(nnue) / 227
-                    + -20.4261308;
+    dbg_hit_on(smallNet, 1);
+    double exponent = 0.00245687 * simpleEval + -0.00014798 * optimism + -0.00040856 * nnue
+                    + -0.00057771 * nnueComplexity + -1.37675467 * (simpleEval > 0)
+                    + 1.30986517 * (nnue > 0) + 11.27818950 * (nnue * simpleEval > 0)
+                    + (std::abs(nnue) < 227) * -9.81549943 + -5.63754095;
 
     double logOutcome = 1 / (1 + std::exp(-exponent));
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227 || logOutcome < .1))
+    if (smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227 || logOutcome < 0.12))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
         nnueComplexity             = std::abs(psqt - positional);
         smallNet                   = false;
     }
-
+    dbg_hit_on(smallNet, 2);
     // Blend optimism and eval with nnue complexity
     optimism += optimism * nnueComplexity / (smallNet ? 433 : 453);
     nnue -= nnue * nnueComplexity / (smallNet ? 18815 : 17864);
