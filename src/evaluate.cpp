@@ -61,7 +61,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     int  simpleEval = simple_eval(pos, pos.side_to_move());
     bool smallNet   = use_smallnet(pos);
-    int  v;
+
+    int v;
 
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
@@ -69,13 +70,15 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     Value nnue           = (125 * psqt + 131 * positional) / 128;
     int   nnueComplexity = std::abs(psqt - positional);
 
-    double exponent = -0.0006807082 * simpleEval + -0.0002072509 * optimism + 0.0019555250 * nnue
-                    + -0.0002589913 * nnueComplexity + (simpleEval > 0) * 0.0000009253
-                    + (nnue > 0) * 0.0000014341 + -0.0000020093;
+    double exponent = 0.00175632 * simpleEval + -0.00012620 * optimism + -0.00887995 * nnue
+                    + -0.00008015 * nnueComplexity + -3.05690271 * (simpleEval > 0)
+                    + 5.68388592 * (nnue > 0) + 17.78295470 * (nnue * simpleEval > 0)
+                    + (std::abs(nnue) < 227) * -6.21294532 + 3.89766855 * std::abs(nnue) / 227
+                    + -20.4261308;
 
     double logOutcome = 1 / (1 + std::exp(-exponent));
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && logOutcome > 0.4)
+    if (smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 227 || logOutcome < .1))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
