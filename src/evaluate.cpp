@@ -69,7 +69,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     Value nnue           = (125 * psqt + 131 * positional) / 128;
     int   nnueComplexity = std::abs(psqt - positional);
-    dbg_hit_on(smallNet, 1);
+
     double exponent = 0.00245687 * simpleEval + -0.00014798 * optimism + -0.00040856 * nnue
                     + -0.00057771 * nnueComplexity + -1.37675467 * (simpleEval > 0)
                     + 1.30986517 * (nnue > 0) + 11.27818950 * (nnue * simpleEval > 0)
@@ -84,7 +84,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
         nnueComplexity             = std::abs(psqt - positional);
         smallNet                   = false;
     }
-    dbg_hit_on(smallNet, 2);
+
     // Blend optimism and eval with nnue complexity
     optimism += optimism * nnueComplexity / (smallNet ? 433 : 453);
     nnue -= nnue * nnueComplexity / (smallNet ? 18815 : 17864);
