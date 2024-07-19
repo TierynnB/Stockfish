@@ -448,15 +448,15 @@ void Search::Worker::iterative_deepening() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (limits.use_time_management() && !threads.stop && !mainThread->stopOnPonderhit)
         {
-            if (elapsed() < (mainThread->tm.optimum() * 0.17))
+            auto elapsedTime = elapsed();
+            // if less than the minimum value to be calcualted below, just increase depth.
+            if (elapsedTime < (mainThread->tm.optimum() * 0.17 * 0.506))
             {
                 threads.increaseDepth =
                   mainThread->ponder || (elapsed() <= (mainThread->tm.optimum() * 0.17) * 0.506);
             }
             else
             {
-                int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
-
                 double fallingEval =
                   (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
                    + 97 * (mainThread->iterValue[iterIdx] - bestValue))
@@ -477,10 +477,9 @@ void Search::Worker::iterative_deepening() {
                 if (rootMoves.size() == 1)
                     totalTime = std::min(500.0, totalTime);
 
-                auto elapsedTime = elapsed();
 
-                if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
-                    && !mainThread->ponder)
+                if (completedDepth >= 10 && !mainThread->ponder && elapsedTime > totalTime * 0.739
+                    && (rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes))) >= 97)
                     threads.stop = true;
 
                 // Stop the search if we have exceeded the totalTime
