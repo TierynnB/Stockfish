@@ -448,44 +448,54 @@ void Search::Worker::iterative_deepening() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (limits.use_time_management() && !threads.stop && !mainThread->stopOnPonderhit)
         {
-            int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
-
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 97 * (mainThread->iterValue[iterIdx] - bestValue))
-                               / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
-
-            // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
-            double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
-
-            double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture;
-
-            // Cap used time in case of a single legal move for a better viewer experience
-            if (rootMoves.size() == 1)
-                totalTime = std::min(500.0, totalTime);
-
-            auto elapsedTime = elapsed();
-
-            if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
-                && !mainThread->ponder)
-                threads.stop = true;
-
-            // Stop the search if we have exceeded the totalTime
-            if (elapsedTime > totalTime)
+            if (elapsed() < (mainThread->tm.optimum() * 0.17))
             {
-                // If we are allowed to ponder do not stop the search now but
-                // keep pondering until the GUI sends "ponderhit" or "stop".
-                if (mainThread->ponder)
-                    mainThread->stopOnPonderhit = true;
-                else
-                    threads.stop = true;
+                threads.increaseDepth =
+                  mainThread->ponder || (elapsed() <= (mainThread->tm.optimum() * 0.17) * 0.506);
             }
             else
-                threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.506;
+            {
+                int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
+
+                double fallingEval =
+                  (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
+                   + 97 * (mainThread->iterValue[iterIdx] - bestValue))
+                  / 10000.0;
+                fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+
+                // If the bestMove is stable over several iterations, reduce time accordingly
+                timeReduction = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
+                double reduction =
+                  (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
+                double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
+                double recapture = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+
+                double totalTime = mainThread->tm.optimum() * fallingEval * reduction
+                                 * bestMoveInstability * recapture;
+
+                // Cap used time in case of a single legal move for a better viewer experience
+                if (rootMoves.size() == 1)
+                    totalTime = std::min(500.0, totalTime);
+
+                auto elapsedTime = elapsed();
+
+                if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
+                    && !mainThread->ponder)
+                    threads.stop = true;
+
+                // Stop the search if we have exceeded the totalTime
+                if (elapsedTime > totalTime)
+                {
+                    // If we are allowed to ponder do not stop the search now but
+                    // keep pondering until the GUI sends "ponderhit" or "stop".
+                    if (mainThread->ponder)
+                        mainThread->stopOnPonderhit = true;
+                    else
+                        threads.stop = true;
+                }
+                else
+                    threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.506;
+            }
         }
 
         mainThread->iterValue[iterIdx] = bestValue;
