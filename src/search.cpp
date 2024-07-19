@@ -450,10 +450,10 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 97 * (mainThread->iterValue[iterIdx] - bestValue))
-                               / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            int fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
+                               + 97 * (mainThread->iterValue[iterIdx] - bestValue));
+            fallingEval     = std::clamp(fallingEval, 5800, 16670);
+
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction              = lastBestMoveDepth + 8 < completedDepth ? 3.24 : 2.23;
@@ -461,8 +461,8 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture;
+            double totalTime = mainThread->tm.optimum() * (fallingEval / 1000) * reduction
+                             * bestMoveInstability * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
