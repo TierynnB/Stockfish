@@ -450,10 +450,9 @@ void Search::Worker::iterative_deepening() {
         {
             auto elapsedTime = elapsed();
             // if less than the minimum value to be calcualted below, just increase depth.
-            if (elapsedTime < (mainThread->tm.optimum() * 0.17 * 0.506))
+            if (elapsedTime <= (mainThread->tm.optimum() * 0.5 * 0.506))
             {
-                threads.increaseDepth =
-                  mainThread->ponder || (elapsed() <= (mainThread->tm.optimum() * 0.17) * 0.506);
+                threads.increaseDepth = mainThread->ponder;
             }
             else
             {
