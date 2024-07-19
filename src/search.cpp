@@ -461,7 +461,7 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * (fallingEval / 1000) * reduction
+            double totalTime = mainThread->tm.optimum() * (fallingEval / 10000) * reduction
                              * bestMoveInstability * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
