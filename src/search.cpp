@@ -87,10 +87,10 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(190 * d - 108, 1596); }
+int stat_bonus(Depth d) { return std::min(190 * d - 108, 1686 - d * 10); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(736 * d - 268, 2044); }
+int stat_malus(Depth d) { return std::min(736 * d - 268, 2084 - d * 10); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
