@@ -52,6 +52,19 @@
 
 namespace Stockfish {
 
+int d1  = 82;
+int d2  = 272;
+int d3  = 462;
+int d4  = 652;
+int d5  = 842;
+int d6  = 1032;
+int d7  = 1222;
+int d8  = 1412;
+int d9  = 1596;
+int d10 = 1596;
+
+TUNE(SetRange(0, 2000), d1, d2, d3, d4, d5, d6, d7, d8, d9, d10);
+
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -87,10 +100,37 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return d == 1 ? 100 : std::min(190 * d - 108, 1596); }
+int stat_bonus(Depth d) {
+    switch (d)
+    {
+    case 1 :
+        return d1;
+    case 2 :
+        return d2;
+    case 3 :
+        return d3;
+    case 4 :
+        return d4;
+    case 5 :
+        return d5;
+    case 6 :
+        return d6;
+    case 7 :
+        return d7;
+    case 8 :
+        return d8;
+    case 9 :
+        return d9;
+    case 10 :
+        return d10;
+    default :
+        return 1596;
+    }
+    // when return d == 1 ? 83 : std::min(190 * d - 108, 1596);
+}
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return d == 1 ? 500 : std::min(736 * d - 268, 2044); }
+int stat_malus(Depth d) { return std::min(736 * d - 268, 2044); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
