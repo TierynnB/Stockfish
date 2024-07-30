@@ -52,6 +52,9 @@
 
 namespace Stockfish {
 
+int d1 = 82, d2 = 272, d3 = 462, d4 = 652, d5 = 842, d6 = 1032, d7 = 1222, d8 = 1412, d9 = 1596,
+    d10 = 1596;
+TUNE(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10);
 
 namespace TB = Tablebases;
 
@@ -64,19 +67,6 @@ void syzygy_extend_pv(const OptionsMap&            options,
 using Eval::evaluate;
 using namespace Search;
 
-
-int d1  = 82;
-int d2  = 272;
-int d3  = 462;
-int d4  = 652;
-int d5  = 842;
-int d6  = 1032;
-int d7  = 1222;
-int d8  = 1412;
-int d9  = 1596;
-int d10 = 1596;
-
-TUNE(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10);
 
 namespace {
 
