@@ -52,10 +52,6 @@
 
 namespace Stockfish {
 
-int d1 = 82, d2 = 272, d3 = 462, d4 = 652, d5 = 842, d6 = 1032, d7 = 1222, d8 = 1412, d9 = 1596,
-    d10 = 1596;
-TUNE(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10);
-
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -96,25 +92,25 @@ int stat_bonus(Depth d) {
     switch (d)
     {
     case 1 :
-        return d1;
+        return 76;
     case 2 :
-        return d2;
+        return 259;
     case 3 :
-        return d3;
+        return 474;
     case 4 :
-        return d4;
+        return 624;
     case 5 :
-        return d5;
+        return 872;
     case 6 :
-        return d6;
+        return 1020;
     case 7 :
-        return d7;
+        return 1258;
     case 8 :
-        return d8;
+        return 1387;
     case 9 :
-        return d9;
+        return 1574;
     case 10 :
-        return d10;
+        return 1684;
     default :
         return 1596;
     }
